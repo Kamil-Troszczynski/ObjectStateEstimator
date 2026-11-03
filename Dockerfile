@@ -1,32 +1,20 @@
-FROM osrf/ros:humble-desktop
+FROM python:3.10-slim-bookworm
 
 SHELL ["/bin/bash", "-c"]
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    PYTHONUNBUFFERED=1 \
-    ROS_DISTRO=humble
+    PYTHONUNBUFFERED=1
 
-# cpu lub c121
-ARG TORCH_VARIANT=cu121
+# cpu lub cu121
+ARG TORCH_VARIANT=cpu
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
     wget \
     nano \
-    python3-pip \
-    python3-colcon-common-extensions \
-    python3-rosdep \
-    python3-opencv \
     libgl1 \
     libglib2.0-0 \
-    ros-humble-cv-bridge \
-    ros-humble-vision-opencv \
-    ros-humble-vision-msgs \
-    ros-humble-image-transport \
-    ros-humble-image-transport-plugins \
-    ros-humble-rqt-image-view \
-    ros-humble-usb-cam \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --no-cache-dir --upgrade pip && \
@@ -36,12 +24,35 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
         "numpy<2" \
         ultralytics \
         opencv-python \
-        scipy \
-        filterpy
+        scipy
 
-WORKDIR /ros2_ws
-RUN mkdir -p src && \
-    echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc && \
-    echo "[ -f /ros2_ws/install/setup.bash ] && source /ros2_ws/install/setup.bash" >> ~/.bashrc
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libsm6 \
+    libice6 \
+    libxcb1 \
+    libx11-6 \
+    libx11-xcb1 \
+    libxkbcommon0 \
+    libxkbcommon-x11-0 \
+    libxcb-icccm4 \
+    libxcb-image0 \
+    libxcb-keysyms1 \
+    libxcb-randr0 \
+    libxcb-render0 \
+    libxcb-render-util0 \
+    libxcb-shape0 \
+    libxcb-sync1 \
+    libxcb-xfixes0 \
+    libxcb-xinerama0 \
+    libxcb-xkb1 \
+    libdbus-1-3 \
+    libfontconfig1 \
+    libfreetype6 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/ByteDance-Seed/Depth-Anything-3.git /opt/Depth-Anything-3 && \
+    pip3 install --no-cache-dir -e /opt/Depth-Anything-3
+
+WORKDIR /object_state_estimator
 
 CMD ["tail", "-f", "/dev/null"]
