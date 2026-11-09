@@ -1,13 +1,17 @@
-import cv2
+import os
+import sys
 import torch
-from depth_anything_3.api import DepthAnything3
+sys.path.append(os.path.join(os.path.dirname(__file__), "Depth-Anything-V2"))
+from depth_anything_v2.dpt import DepthAnythingV2
 
 
 class DepthEstimation:
-    def __init__(self, model_name: str):
-        self.model = DepthAnything3.from_pretrained(model_name)
-    
+    def __init__(self, input_size: int = 252):
+        self._input_size = input_size
+        self._depth_model_config = { "encoder": "vits", "features": 64, "out_channels": [48, 96, 192, 384] }
+        self._depth_model = DepthAnythingV2(**self._depth_model_config)
+        self._depth_model.load_state_dict(torch.load("models/depth_anything_v2_vits.pth", map_location = "cpu"))
+        self._depth_model = torch.ao.quantization.quantize_dynamic(self._depth_model, {torch.nn.Linear}, dtype = torch.qint8)
+
     def __call__(self, frame):
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        prediction = self.model.inference([rgb_frame], process_res = 504)
-        return cv2.resize(prediction.depth[0], (frame.shape[1], frame.shape[0]))
+        return self._depth_model.infer_image(frame, self._input_size)

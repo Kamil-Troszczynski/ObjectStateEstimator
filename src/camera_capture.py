@@ -14,12 +14,10 @@ def objects_estimation() -> None:
         if not ok:
             break
 
-        object_estimation = object_state_estimator(frame)
-
-        depth_view = cv2.normalize(object_estimation, None, 0, 255, cv2.NORM_MINMAX).astype("uint8")
-        depth_view = cv2.applyColorMap(depth_view, cv2.COLORMAP_INFERNO)
+        human_landmarks, depth_estimation = object_state_estimator(frame)
         
-        cv2.imshow("Objects estimation", depth_view)
+        cv2.imshow("Objects estimation", human_landmarks[0].plot())
+        # cv2.imshow("Objects estimation", depth_estimation)
         
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break

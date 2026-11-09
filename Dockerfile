@@ -50,9 +50,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN git clone https://github.com/ByteDance-Seed/Depth-Anything-3.git /opt/Depth-Anything-3 && \
-    pip3 install --no-cache-dir -e /opt/Depth-Anything-3
-
 WORKDIR /object_state_estimator
 
 CMD ["tail", "-f", "/dev/null"]

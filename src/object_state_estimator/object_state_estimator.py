@@ -6,8 +6,9 @@ from .depth_estimator.depth_estimation import DepthEstimation
 class ObjectStateEstimator:
     def __init__(self):
         self.human_landmarks = HumanLandmarks(configuration = 0.5, verbose = False)
-        self.depth_estimation = DepthEstimation("depth-anything/DA3-SMALL")
+        self.depth_estimation = DepthEstimation()
 
-    def __call__(self, frame):
-        # return self.human_landmarks(frame)
-        return self.depth_estimation(frame) 
+    def __call__(self, frame) -> tuple:
+        human_landmarks = self.human_landmarks(frame)
+        depth_estimation = self.depth_estimation(frame) 
+        return human_landmarks, depth_estimation
