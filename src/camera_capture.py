@@ -14,10 +14,8 @@ def objects_estimation() -> None:
         if not ok:
             break
 
-        human_landmarks, depth_estimation = object_state_estimator(frame)
-        
+        human_landmarks = object_state_estimator(frame)
         cv2.imshow("Objects estimation", human_landmarks[0].plot())
-        # cv2.imshow("Objects estimation", depth_estimation)
         
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break

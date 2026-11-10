@@ -17,7 +17,6 @@ Weights are stored in `models/`.
 | Model | Task |
 |---|---|
 | YOLO26n-pose | Human pose estimation (keypoints) |
-| Depth Anything V2 (ViT-S) | Monocular depth estimation |
 
 ## Requirements
 
